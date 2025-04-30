@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Security.Cryptography;
 
 namespace Dungeon;
@@ -6,51 +7,55 @@ public class Welt
 {
     public string Name { get; private set; }
 
-    public ARaum StartRaum { get;private set; }
+    public ARaum StartRaum { get; set; } = new StartRaum();
     
-    public Welt welt { get; private set; }
+    private Zeilraum zielraum { get; set; }
+    
+    
 
-    public Welt(string name)
+    bool IsExit(ARaum raum)
     {
-        Name = name;
+        if (raum == zielraum)
+        {
+            return true;
+        }
+
+        return false;
     }
     
 
     public void Erschaffen()
     {
-        StartRaum = new StartRaum();
         LeererRaum leer1 = new LeererRaum();
         LeererRaum leer2 = new LeererRaum();
         LeererRaum leer3 = new LeererRaum();
+        FallenRaum falle1 = new FallenRaum(20);
+        FallenRaum falle2 = new FallenRaum(30);
         Zeilraum ziel = new Zeilraum();
-        FallenRaum fallen = new FallenRaum(20);
-        FallenRaum fallen2 = new FallenRaum(30);
+        zielraum = ziel;
+        Schatzraum schatzraum1 = new Schatzraum(Schatzraum.ESchätze.EKrone);
+        Schatzraum schatzraum2 = new Schatzraum(Schatzraum.ESchätze.ETrank);
         
         //Räume verbinden
         StartRaum.Norden = leer1;
         leer1.Süden = StartRaum;
-        leer1.Norden = fallen;
-        fallen.Süden = leer1;
-        fallen.Osten = leer3;
-        leer3.Westen = fallen;
-        leer3.Norden = fallen2;
-        fallen2.Süden = leer3;
-        leer3.Osten = ziel;
-        ziel.Westen = leer3;
-        leer3.Süden = leer2;
-        leer2.Norden = leer3;
-        leer2.Westen = leer1;
+        leer1.Norden = falle1;
         leer1.Osten = leer2;
-
-
-
-
-
-
-
-
-
-
+        leer2.Westen = leer1;
+        leer2.Norden = leer3;
+        leer2.Osten = schatzraum2;
+        schatzraum2.Westen = leer2;
+        leer2.Süden = schatzraum1;
+        schatzraum1.Norden = leer2;
+        falle1.Osten = leer3;
+        falle1.Süden = leer1;
+        leer3.Westen = falle1;
+        leer3.Norden = falle2;
+        leer3.Osten = ziel;
+        leer3.Süden = leer2;
+        falle2.Süden = leer3;
+        ziel.Westen = leer3;
+        
     }
 
     public void Enter(Held held)

@@ -1,6 +1,6 @@
 namespace Dungeon;
 
-public class Held
+public class Held : IMoveable
 {
     public string Name{get;set;}
     public int Leben { get; set; }
@@ -13,27 +13,27 @@ public class Held
         this.Leben = leben;
     }
 
-    public void Bewegen(string richtung)
+    public void Move(ERichtungen richtung)
     {
         ARaum neu = null;
         switch (richtung)
         {
-            case "Norden":
-                neu = Standort.Norden;
+            case ERichtungen.EVorne:
+                Standort.Norden?.Betreten(welt,this); // ? prüft ob Norden null ist und wenn ja dann führt er es gar nicht erst aus
                 break;
-            case "Osten":
-                neu = Standort.Osten;
+            case ERichtungen.ELinks:
+                Standort.Westen?.Betreten(welt,this);
                 break;
-            case "Süden":
-                neu = Standort.Süden;
+            case ERichtungen.EZurück:
+                Standort.Süden?.Betreten(welt,this);
                 break;
-            case "Westen":
-                neu = Standort.Westen;
+            case ERichtungen.ERechts:
+                Standort.Osten?.Betreten(welt,this);
                 break;
-            case "Ende":
+            default:
                 Console.WriteLine("Welt Beendet");
-                break;
-            default: Console.WriteLine("Falsche Richtung"); return;
+                Console.WriteLine("Falsche Richtung"); return;
+                
         }
 
         if (neu != null)
@@ -44,6 +44,21 @@ public class Held
         else
         {
             Console.WriteLine("Wand");
+        }
+    }
+    
+    public List<Schatzraum.ESchätze>Rucksack { get; set; }
+    
+    bool IsAlive()
+    {
+        if (Leben >= 0)
+        {
+            Console.WriteLine("Spieler ist Tot");
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }
